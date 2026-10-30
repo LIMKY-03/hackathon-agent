@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cofa-hackathon-agent-orchestrator"
+version = "0.1.0"
+description = "Policy-aware multi-agent task orchestration for the in-platform Codex CLI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "KYEONGSS contributors" }]
+dependencies = []
+
+[project.scripts]
+cofa-orchestrator = "cofa_orchestrator.cli:main"
+
+[tool.setuptools]
+packages = ["cofa_orchestrator"]
+

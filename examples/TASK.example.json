@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "topic": "Build a small local application",
+  "context": "Replace this example only inside the permitted contest workspace.",
+  "requirements": [
+    "Implement the required behavior",
+    "Provide automated tests"
+  ],
+  "constraints": [
+    "Run entirely inside the provided workspace",
+    "Do not use external AI services"
+  ],
+  "outputs": [
+    "Runnable source code",
+    "Test evidence",
+    "Local submission manifest"
+  ],
+  "acceptance_criteria": [
+    "All tests pass",
+    "Every requirement has evidence"
+  ],
+  "time_budget_minutes": 180
+}
+

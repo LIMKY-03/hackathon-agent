@@ -1,0 +1,10 @@
+model = "gpt-6.1-sol"
+sandbox_mode = "workspace-write"
+
+[features]
+multi_agent = true
+computer_use = false
+browser_use = false
+browser_use_external = false
+in_app_browser = false
+

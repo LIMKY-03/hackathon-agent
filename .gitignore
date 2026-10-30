@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+
+# Live contest inputs and generated work must stay local.
+TASK.json
+.cofa/
+submission/
+
