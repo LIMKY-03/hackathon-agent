@@ -22,7 +22,7 @@ ls -la
 
 ```bash
 cd ~
-git clone https://github.com/<ACCOUNT>/cofa-hackathon-agent-orchestrator.git
+git clone https://github.com/LIMKY-03/cofa-hackathon-agent-orchestrator.git
 cd cofa-hackathon-agent-orchestrator
 ```
 

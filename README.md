@@ -39,7 +39,7 @@ Astra와 그 밖의 모델은 코드에서 거부됩니다. 내장 멀티에이�
 
 ```bash
 cd ~
-git clone https://github.com/<ACCOUNT>/cofa-hackathon-agent-orchestrator.git
+git clone https://github.com/LIMKY-03/cofa-hackathon-agent-orchestrator.git
 cd cofa-hackathon-agent-orchestrator
 ```
 
