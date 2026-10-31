@@ -22,8 +22,8 @@ ls -la
 
 ```bash
 cd ~
-git clone https://github.com/LIMKY-03/cofa-hackathon-agent-orchestrator.git
-cd cofa-hackathon-agent-orchestrator
+git clone https://github.com/LIMKY-03/hackathon-agent.git
+cd hackathon-agent
 ```
 
 공개 저장소이므로 개인 GitHub 토큰이나 로그인이 필요하지 않습니다. `git

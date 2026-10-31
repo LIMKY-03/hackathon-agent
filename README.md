@@ -1,4 +1,4 @@
-# CofA Hackathon Agent Orchestrator
+# Hackathon Agent
 
 대회 플랫폼이 제공하는 **Codex CLI만** 사용하여 과제 명세를 분석하고,
 `planner → implementer → tester → reviewer → packager` 역할로 작업을 분배하는
@@ -39,8 +39,8 @@ Astra와 그 밖의 모델은 코드에서 거부됩니다. 내장 멀티에이�
 
 ```bash
 cd ~
-git clone https://github.com/LIMKY-03/cofa-hackathon-agent-orchestrator.git
-cd cofa-hackathon-agent-orchestrator
+git clone https://github.com/LIMKY-03/hackathon-agent.git
+cd hackathon-agent
 ```
 
 ### 2. 자체 테스트
