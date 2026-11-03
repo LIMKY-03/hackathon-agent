@@ -1,8 +1,10 @@
 model = "gpt-6.1-sol"
 sandbox_mode = "workspace-write"
+service_tier = "fast"
 
 [features]
 multi_agent = true
+fast_mode = true
 computer_use = false
 browser_use = false
 browser_use_external = false

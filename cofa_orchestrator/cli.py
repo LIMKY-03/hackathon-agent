@@ -70,6 +70,10 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--profile", choices=MODEL_PROFILES, default="balanced")
     run.add_argument("--model", choices=ALLOWED_MODELS)
     run.add_argument("--dry-run", action="store_true")
+    run.add_argument(
+        "--speed", choices=("fast", "standard"), default="fast",
+        help="Codex service speed for every role (default: fast).",
+    )
 
     lock = sub.add_parser("lock", help="Permanently stop AI work after submission")
     lock.add_argument("--workspace", type=_workspace, default=Path.cwd().resolve())
@@ -144,6 +148,7 @@ def _run(args: argparse.Namespace) -> int:
             model=model,
             profile=args.profile,
             dry_run=args.dry_run,
+            speed=args.speed,
         )
         print("Command: " + " ".join(result.command))
         return result.returncode
@@ -153,6 +158,7 @@ def _run(args: argparse.Namespace) -> int:
         profile=args.profile,
         single_model=model if args.model is not None else None,
         dry_run=args.dry_run,
+        speed=args.speed,
     )
     for result in results:
         print("Command: " + " ".join(result.command))

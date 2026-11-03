@@ -71,19 +71,27 @@ def build_plan(
 
     role_tasks = {
         "planner": [
+            "Inspect provided data before defining the MVP or implementation plan; "
+            "follow the DATA PREFLIGHT protocol in the role prompt.",
             "Decompose every requirement and output into an executable plan.",
             "Create a risk list and requirement-to-test traceability matrix.",
             "Identify independent work that can run concurrently without file conflicts.",
         ],
         "implementer": [
+            "Read .cofa/data-audit.md and .cofa/edge-cases.md before coding; "
+            "preserve source data and implement the documented handling decisions.",
             *(f"Implement {req_id}: {text}" for req_id, text in zip(requirement_ids, spec.requirements)),
             "Record changed files and implementation evidence in the handoff.",
         ],
         "tester": [
+            "Turn .cofa/edge-cases.md into reproducible tests, including empty, "
+            "invalid, duplicate, boundary, and relationship cases where applicable.",
             *(f"Verify {req_id}: {text}" for req_id, text in zip(requirement_ids, spec.requirements)),
             "Run relevant tests and report commands, results, and reproducible defects.",
         ],
         "reviewer": [
+            "Check the data audit evidence and edge-case decisions against the "
+            "actual data and tests; flag assumptions presented as observations.",
             "Independently audit every requirement, constraint, acceptance criterion, and output.",
             "Check for regressions, unsupported claims, policy violations, and missing evidence.",
         ],

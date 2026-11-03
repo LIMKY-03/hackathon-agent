@@ -62,7 +62,10 @@ def build_codex_command(
     model: str,
     output_file: Path,
     multi_agent: bool,
+    speed: str = "fast",
 ) -> list[str]:
+    if speed not in ("fast", "standard"):
+        raise ValueError("speed must be 'fast' or 'standard'.")
     command = [
         "codex",
         "exec",
@@ -70,6 +73,10 @@ def build_codex_command(
         str(workspace.resolve()),
         "-m",
         canonical_model(model),
+        "--enable",
+        "fast_mode",
+        "-c",
+        'service_tier="fast"' if speed == "fast" else 'service_tier="default"',
         "-s",
         "workspace-write",
         "-a",
@@ -108,6 +115,7 @@ def run_multi_agent(
     model: str = "gpt-6.1-sol",
     profile: str = "balanced",
     dry_run: bool = False,
+    speed: str = "fast",
     run: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
 ) -> RunResult:
     workspace = workspace.resolve()
@@ -123,6 +131,7 @@ def run_multi_agent(
         model=model,
         output_file=output_file,
         multi_agent=True,
+        speed=speed,
     )
     returncode = 0 if dry_run else _execute(
         command, prompt_path.read_text(encoding="utf-8"), workspace=workspace, run=run
@@ -137,6 +146,7 @@ def run_sequential(
     profile: str = "balanced",
     single_model: str | None = None,
     dry_run: bool = False,
+    speed: str = "fast",
     run: Callable[..., subprocess.CompletedProcess[str]] = subprocess.run,
 ) -> list[RunResult]:
     workspace = workspace.resolve()
@@ -156,6 +166,7 @@ def run_sequential(
             model=role["suggested_model"],
             output_file=output_file,
             multi_agent=False,
+            speed=speed,
         )
         returncode = 0 if dry_run else _execute(
             command, prompt_path.read_text(encoding="utf-8"), workspace=workspace, run=run

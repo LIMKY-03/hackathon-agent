@@ -12,6 +12,8 @@
 
 - 주제, 요구사항, 제약, 최종 제출물, 평가 기준을 `TASK.json`으로 입력
 - 요구사항 ID와 추적표를 만들고 5개 역할에 동적으로 배분
+- Planner가 원본 데이터를 읽기 전용으로 분석하고 edge case를 정리한 뒤 MVP 설계
+- 모든 역할에 Fast 서비스 속도를 기본 요청 (`--speed fast`)
 - Codex 내장 멀티에이전트 실행과 순차 실행 대체 경로 지원
 - 허용 모델 4종만 통과시키는 화이트리스트
 - Computer Use와 브라우저 자동화 기능을 실행 명령에서 강제로 비활성화
@@ -29,9 +31,41 @@
 | Luna 6 | `gpt-6-luna` | 빠른 검사, 패키징 |
 | Sol 6.0 | `gpt-6-sol` | 테스트, 대체 총괄 |
 
-Astra와 그 밖의 모델은 코드에서 거부됩니다. 내장 멀티에이전트 모드에서는
-한 실행의 서브에이전트들이 루트와 같은 모델을 사용합니다. 역할별 모델
-라우팅이 필요할 때만 `--mode sequential`을 사용합니다.
+Astra와 그 밖의 모델은 실행 모델 화이트리스트에서 거부됩니다. 현재 기본
+멀티에이전트 프롬프트는 서브에이전트별 모델을 명시하지 않으므로 환경의
+기본값을 따릅니다. 별도 설정이 없다면 부모 모델을 상속합니다. 최신 Codex는
+서브에이전트별 모델 지정도 지원하지만 CofA 버전과 권한을 확인해야 합니다.
+이 프레임워크의 `--mode sequential`은 프로필의 역할별 모델을 명시적으로
+전달합니다. 두 모델의 독립 분석·교차 검토 절차는 [계획 안내](PLANNING_GUIDE_KO.md)를 참고하세요.
+
+## 개발 전 데이터 분석
+
+Planner는 먼저 제공 파일의 구조·타입·키·단위·날짜와 관계를 확인하고,
+결측·중복·잘못된 형식·범위·참조 오류 등을 조사하도록 지시받습니다.
+원본은 보존하며, 표본 분석은 전체 분석과 구분합니다. 데이터가 없는 과제는
+그 사실을 기록합니다. 이 과정은 모델에 주는 작업 지침이며 별도의 자동 데이터
+검사 엔진이나 보고서 내용의 강제 검증 기능은 아닙니다.
+
+- `.cofa/data-audit.md`: 조사 근거, 관찰 결과, 가정, 미해결 질문
+- `.cofa/edge-cases.md`: 예외 조건, 처리 규칙, 예상 화면/API 동작, 테스트 방법
+
+Implementer는 두 문서를 읽고 구현하고 Tester는 예외 조건을 테스트합니다.
+
+## Fast 속도 기본 적용
+
+모든 `run` 실행에 `--enable fast_mode -c 'service_tier="fast"'`를 전달합니다.
+작업 폴더가 저장소 밖이어도 적용되도록 CLI 인자로 지정하며, 저장소 내 대화형
+Codex용 `.codex/config.toml`에도 같은 기본값을 넣었습니다. 서브에이전트의
+서비스 속도는 부모 설정을 따릅니다. 모델이나 추론 강도는 변경하지 않습니다.
+
+`--profile fast`는 역할별 **모델 배정**, `--speed fast`는 **서비스 속도**로
+서로 다른 설정입니다. Fast 사용 가능 여부와 실제 속도는 플랫폼·모델에
+따라 다르며 사용량 소모가 늘 수 있습니다. 지원하지 않으면 오류 내용을 확인하고
+`--speed standard`로 실행하세요. 자동으로 다른 모델이나 서비스로 전환하지 않습니다.
+
+```bash
+python -m cofa_orchestrator run --workspace .. --mode multi-agent --speed fast
+```
 
 ## 빠른 시작
 
@@ -148,6 +182,8 @@ Codex의 `AGENTS.md` 처리 방식과 멀티에이전트 동작은 공식 OpenAI
 
 - https://developers.openai.com/cookbook/examples/gpt-5/codex_prompting_guide
 - https://developers.openai.com/api/docs/guides/responses-multi-agent
+- https://learn.chatgpt.com/docs/agent-configuration/subagents
+- https://learn.chatgpt.com/docs/agent-configuration/speed
 
 ## 라이선스
 

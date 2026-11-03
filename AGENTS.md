@@ -25,7 +25,9 @@ Read `TASK.json`, `.cofa/plan.json`, and `.cofa/prompts/` before acting. The
 root coordinator owns the final response and delegates bounded work to these
 roles when multi-agent tools are available:
 
-1. `planner`: requirement decomposition, traceability, risks, and plan.
+1. `planner`: read-only data audit and edge-case analysis first, then requirement
+   decomposition, traceability, risks, MVP, and plan. Write `.cofa/data-audit.md`
+   and `.cofa/edge-cases.md` before handing work to the implementer.
 2. `implementer`: implementation only after the plan is ready.
 3. `tester`: tests, execution evidence, and defect reports.
 4. `reviewer`: independent requirement, safety, and regression review.
@@ -36,6 +38,14 @@ files. The implementer is the primary code writer. The tester and reviewer
 must not silently repair implementation defects; they report defects to the
 coordinator, which reassigns fixes to the implementer and requests retesting.
 The packager runs only after tests and review pass.
+
+Keep all roles on the requested Fast service tier where the platform supports it.
+Fast speed is separate from the `fast` model-routing profile. Do not silently change
+models or reduce reasoning effort to simulate Fast mode.
+
+During data preflight preserve source files, distinguish measurements from assumptions,
+label sample-based findings, and turn edge cases into expected behavior and tests.
+Resolve blocking data questions before implementing the affected functionality.
 
 If multi-agent tools are unavailable, follow the role packets sequentially in
 dependency order and write every handoff under `.cofa/handoffs/`.
