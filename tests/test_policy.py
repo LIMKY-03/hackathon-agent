@@ -1,10 +1,14 @@
+import contextlib
+import io
 import tempfile
 import unittest
 from pathlib import Path
 
 from cofa_orchestrator.policy import (
     PolicyViolation,
-    assert_no_external_ai_credentials,
+    EXTERNAL_AI_CREDENTIALS,
+    credential_environment_notice,
+    warn_about_credential_environment,
     assert_not_post_submission,
     canonical_model,
     create_post_submission_lock,
@@ -22,9 +26,34 @@ class PolicyTests(unittest.TestCase):
         with self.assertRaises(PolicyViolation):
             canonical_model("gpt-6-astra")
 
-    def test_external_credentials_are_rejected(self):
-        with self.assertRaises(PolicyViolation):
-            assert_no_external_ai_credentials({"OPENROUTER_API_KEY": "secret"})
+    def test_credential_names_produce_notice_without_reading_values(self):
+        class NamesOnly(dict):
+            def __getitem__(self, key):
+                raise AssertionError("Credential values must not be read")
+
+            def get(self, key, default=None):
+                raise AssertionError("Credential values must not be read")
+
+        for name in EXTERNAL_AI_CREDENTIALS:
+            with self.subTest(name=name):
+                environment = NamesOnly({name: "test-secret-sentinel"})
+                message = credential_environment_notice(environment)
+                self.assertIsNotNone(message)
+                self.assertNotIn(name, message)
+                self.assertNotIn("test-secret-sentinel", message)
+
+    def test_notice_is_non_blocking_and_does_not_modify_environment(self):
+        environment = {"GOOGLE_API_KEY": "test-non-ai-service-sentinel"}
+        original = dict(environment)
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            warn_about_credential_environment(environment)
+        self.assertIn("notice:", stderr.getvalue())
+        self.assertNotIn("test-non-ai-service-sentinel", stderr.getvalue())
+        self.assertEqual(environment, original)
+
+    def test_no_notice_for_unrelated_environment(self):
+        self.assertIsNone(credential_environment_notice({"PATH": "example"}))
 
     def test_post_submission_lock_stops_execution(self):
         with tempfile.TemporaryDirectory() as directory:

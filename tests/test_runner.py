@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
+from cofa_orchestrator.policy import EXTERNAL_AI_CREDENTIALS
 
 from cofa_orchestrator.runner import (
     build_codex_command, prepare_workspace, run_multi_agent, run_sequential,
@@ -11,6 +12,36 @@ from cofa_orchestrator.runner import (
 
 
 class RunnerTests(unittest.TestCase):
+    def test_both_modes_invoke_codex_with_credentials_and_no_secret_leak(self):
+        calls = []
+        credentials = {name: "test-credential-sentinel" for name in EXTERNAL_AI_CREDENTIALS}
+
+        def fake_run(command, **kwargs):
+            calls.append((command, kwargs))
+            return SimpleNamespace(returncode=0)
+
+        stderr = io.StringIO()
+        with tempfile.TemporaryDirectory() as directory, \
+                patch.dict("os.environ", credentials, clear=True), \
+                patch("cofa_orchestrator.runner.shutil.which", return_value="codex"), \
+                contextlib.redirect_stderr(stderr):
+            workspace = Path(directory)
+            task = self._task(workspace)
+            self.assertEqual(run_multi_agent(workspace, task, run=fake_run).returncode, 0)
+            results = run_sequential(workspace, task, run=fake_run)
+            self.assertEqual(len(results), 5)
+            self.assertTrue(all(result.returncode == 0 for result in results))
+            reports = list((workspace / ".cofa").rglob("*"))
+            generated = "".join(path.read_text(encoding="utf-8") for path in reports if path.is_file())
+            import os
+            for name, value in credentials.items():
+                self.assertEqual(os.environ[name], value)
+        self.assertEqual(len(calls), 6)
+        captured = stderr.getvalue() + repr(calls) + generated
+        self.assertNotIn("test-credential-sentinel", captured)
+        for name in credentials:
+            self.assertNotIn(name, captured)
+
     def _task(self, workspace):
         task = workspace / "TASK.json"
         task.write_text(json.dumps({
@@ -100,3 +131,5 @@ class RunnerTests(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
+import contextlib
+import io

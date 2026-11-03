@@ -2,6 +2,13 @@
 
 This framework is intentionally inbound-only during a contest run.
 
+Credential environment variables may be supplied by the platform or used for
+non-AI services. Their presence alone is not evidence of prohibited usage and
+does not stop execution. The framework checks names only and emits a generic
+notice without reading values, printing variable names, or modifying the
+environment. This notice does not authorize external AI or personal-key use
+and is not a runtime monitor of API traffic.
+
 ## Allowed
 
 - Clone this already-public, generic repository before or during the contest

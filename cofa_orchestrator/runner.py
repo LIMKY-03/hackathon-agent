@@ -11,7 +11,7 @@ from typing import Any, Callable, Sequence
 
 from .planner import build_plan
 from .policy import (
-    assert_no_external_ai_credentials,
+    warn_about_credential_environment,
     assert_not_post_submission,
     canonical_model,
     codex_safety_feature_args,
@@ -120,7 +120,7 @@ def run_multi_agent(
 ) -> RunResult:
     workspace = workspace.resolve()
     assert_not_post_submission(workspace)
-    assert_no_external_ai_credentials()
+    warn_about_credential_environment()
     if not dry_run and shutil.which("codex") is None:
         raise RuntimeError("Codex CLI was not found on PATH.")
     prepare_workspace(workspace, task_path, profile=profile)
@@ -151,7 +151,7 @@ def run_sequential(
 ) -> list[RunResult]:
     workspace = workspace.resolve()
     assert_not_post_submission(workspace)
-    assert_no_external_ai_credentials()
+    warn_about_credential_environment()
     if not dry_run and shutil.which("codex") is None:
         raise RuntimeError("Codex CLI was not found on PATH.")
     _, plan = prepare_workspace(

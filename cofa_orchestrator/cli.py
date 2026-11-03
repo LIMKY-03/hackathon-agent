@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -12,7 +11,8 @@ from .planner import MODEL_PROFILES
 from .policy import (
     ALLOWED_MODELS,
     PolicyViolation,
-    assert_no_external_ai_credentials,
+    credential_environment_notice,
+    warn_about_credential_environment,
     assert_not_post_submission,
     canonical_model,
     create_post_submission_lock,
@@ -109,7 +109,7 @@ def _init(args: argparse.Namespace) -> int:
 
 def _validate(args: argparse.Namespace) -> int:
     assert_not_post_submission(args.workspace)
-    assert_no_external_ai_credentials()
+    warn_about_credential_environment()
     spec = TaskSpec.load(_task_path(args))
     print(
         json.dumps(
@@ -171,16 +171,7 @@ def _status(args: argparse.Namespace) -> int:
         "workspace": str(args.workspace),
         "post_submission_locked": lock_path(args.workspace).exists(),
         "plan_ready": plan.exists(),
-        "external_ai_credentials_present": sorted(
-            key
-            for key in (
-                "OPENAI_API_KEY",
-                "OPENROUTER_API_KEY",
-                "ANTHROPIC_API_KEY",
-                "GOOGLE_API_KEY",
-            )
-            if os.environ.get(key)
-        ),
+        "credential_environment_notice": credential_environment_notice(),
     }
     print(json.dumps(data, ensure_ascii=False, indent=2))
     return 0
